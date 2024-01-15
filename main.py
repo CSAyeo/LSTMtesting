@@ -1,3 +1,4 @@
+import datetime
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -90,37 +91,37 @@ def test_lstm_hyperparameters(data, test_size):
 def plot_lstm_results(results):
     df_results = pd.DataFrame(list(results.values()),
                               index=pd.MultiIndex.from_tuples(results.keys(), names=['Look Back', 'Units', 'Epochs']),
-                              columns=['MSE'])
+                              columns=['Avg MSE', 'Individual MSE'])
 
     plt.figure(figsize=(15, 8))
 
     # Plot for different look_backs
     plt.subplot(3, 1, 1)
-    sns.lineplot(data=df_results, x='Look Back', y='MSE', hue='Epochs', style='Units', markers=True, dashes=False)
-    plt.title('MSE vs Look Back')
+    sns.lineplot(data=df_results, x='Look Back', y='Avg MSE', hue='Epochs', style='Units', markers=True, dashes=False)
+    plt.title('Avg MSE vs Look Back')
     plt.xlabel('Look Back')
     plt.ylabel('Mean Squared Error')
     plt.legend(title='Epochs')
 
     # Plot for different units
     plt.subplot(3, 1, 2)
-    sns.lineplot(data=df_results, x='Units', y='MSE', hue='Epochs', style='Look Back', markers=True, dashes=False)
-    plt.title('MSE vs Units')
+    sns.lineplot(data=df_results, x='Units', y='Avg MSE', hue='Epochs', style='Look Back', markers=True, dashes=False)
+    plt.title('Avg MSE vs Units')
     plt.xlabel('Units')
     plt.ylabel('Mean Squared Error')
     plt.legend(title='Epochs')
 
     # Plot for different epochs
     plt.subplot(3, 1, 3)
-    sns.lineplot(data=df_results, x='Epochs', y='MSE', hue='Look Back', style='Units', markers=True, dashes=False)
-    plt.title('MSE vs Epochs')
+    sns.lineplot(data=df_results, x='Epochs', y='Avg MSE', hue='Look Back', style='Units', markers=True, dashes=False)
+    plt.title('Avg MSE vs Epochs')
     plt.xlabel('Epochs')
     plt.ylabel('Mean Squared Error')
     plt.legend(title='Look Back')
 
     plt.tight_layout()
     plt.show()
-
+"""
 if __name__ == "__main__":
     # Generate synthetic time series data
     start_date = '2022-01-01'
@@ -135,3 +136,35 @@ if __name__ == "__main__":
 
     # Plot the results
     plot_lstm_results(results)
+    """
+if __name__ == "__main__":
+    # Generate synthetic time series data
+    start_date = '2022-01-01'
+    end_date = '2022-12-31'
+    synthetic_data = generate_synthetic_data(start_date, end_date)
+
+    # Set the test_size parameter for time series cross-validation
+    test_size = 0.2
+
+    # Best hyperparameters
+    best_look_back = 7
+    best_units = 15
+    best_epochs = 15
+
+    # Train the LSTM model over 1000 runs
+    mse_values = []
+    for run in range(1, 1001):
+        # Split data into training and testing sets
+        train, test = timeseries_train_test_split(synthetic_data['value'], test_size)
+
+        # Evaluate the LSTM model with the best hyperparameters
+        avg_mse, _ = evaluate_lstm_model(train, test, best_look_back, best_units, best_epochs)
+        mse_values.append(avg_mse)
+
+        # Print the timestamp and average mean squared error for each run
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Run {run} completed at {timestamp}. Average Mean Squared Error: {avg_mse}")
+
+    # Print the overall average mean squared error over 1000 runs
+    overall_avg_mse = np.mean(mse_values)
+    print(f"\nOverall Average Mean Squared Error over 1000 runs: {overall_avg_mse}")
