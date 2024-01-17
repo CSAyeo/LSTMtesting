@@ -56,7 +56,7 @@ def evaluate_lstm_model(train, test, look_back, units, epochs):
 
     # Train the model multiple times
     mse_values = []
-    for _ in range(5):  # Adjust the number of runs as needed
+    for _ in range(10):  # Adjust the number of runs as needed
         model.fit(x_train, y_train, epochs=epochs, batch_size=1, verbose=0)
         predictions = model.predict(x_test)
         predictions = scaler.inverse_transform(predictions)
@@ -72,9 +72,9 @@ def test_lstm_hyperparameters(data, test_size):
     train, test = timeseries_train_test_split(data, test_size)
 
     hyperparameters = {
-        'look_back_values': [3, 5, 7],
-        'units_values': [50, 100, 150],
-        'epochs_values': [50, 100, 150]
+        'look_back_values': [1, 2, 3],
+        'units_values': [50, 200, 300],
+        'epochs_values': [50, 100, 300]
     }
 
     results = {}
@@ -121,7 +121,8 @@ def plot_lstm_results(results):
 
     plt.tight_layout()
     plt.show()
-"""
+
+
 if __name__ == "__main__":
     # Generate synthetic time series data
     start_date = '2022-01-01'
@@ -168,3 +169,5 @@ if __name__ == "__main__":
     # Print the overall average mean squared error over 1000 runs
     overall_avg_mse = np.mean(mse_values)
     print(f"\nOverall Average Mean Squared Error over 1000 runs: {overall_avg_mse}")
+    
+    """
